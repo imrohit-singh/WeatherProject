@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+</head>
+<body>
+    <div class="App">
+        <h1>Weather App</h1>
+        <form class="search-form" id="searchForm">
+            <input
+                type="text"
+                placeholder="Enter city name"
+                class="search-input"
+                id="cityInput"
+                value="Patna">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+
+        <p id="loadingMessage" style="display: none; text-align: center;">Loading...</p> 
+        <p id="errorMessage" class="error-message" style="display: none; color: red; text-align: center;"></p>
+        <div id="weatherDetails" class="weather-details" style="display: none; text-align: center;"></div>
+    </div>
+
+    <script>
+        const searchForm = document.getElementById('searchForm');
+        const cityInput = document.getElementById('cityInput');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const weatherDetails = document.getElementById('weatherDetails');
+
+        const fetchWeather = async (city) => {
+            try {
+                loadingMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                weatherDetails.style.display = 'none';
+
+                const response = await fetch(`http://api.weatherapi.com/v1/current.json?key=7e4a447f00ea4a03b5952228240912&q=${city}&aqi=no`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch weather data');
+                }
+
+                const data = await response.json();
+                displayWeather(data);
+            } catch (err) {
+                errorMessage.textContent = 'Failed to fetch weather data. Please check the city name.';
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingMessage.style.display = 'none';
+            }
+        };
+
+        const displayWeather = (data) => {
+            weatherDetails.innerHTML = `
+                <h2>Weather in ${data.location.name}, ${data.location.region}</h2>
+                <p>Temperature: ${data.current.temp_c}°C</p>
+                <p>Condition: ${data.current.condition.text}</p>
+                <img src="${data.current.condition.icon}" alt="Weather Icon">
+            `;
+            weatherDetails.style.display = 'block';
+        };
+
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const city = cityInput.value.trim();
+            if (city) {
+                fetchWeather(city);
+            } else {
+                errorMessage.textContent = 'Please enter a city name.';
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        fetchWeather('Patna');
+    </script>
+</body>
+</html>
