@@ -36,7 +36,7 @@
                 errorMessage.style.display = 'none';
                 weatherDetails.style.display = 'none';
 
-                const response = await fetch(`http://api.weatherapi.com/v1/current.json?key=&q=London&aqi=no`);
+                const response = await fetch(`http://api.weatherapi.com/v1/current.json?key=176adbcf3231414398c52515240912&q=${city}&aqi=no`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch weather data');
